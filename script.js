@@ -24,18 +24,30 @@ itemsArray.forEach(elem=>{
 
 //Кнопка создания тудушек
 btnCreate.onclick = function(){
+    let isCheked = false;
+    for(let i = itemsArray.length -1; i > -1; i--){
+        if(itemsArray[i].name === inputCreateName.value){
+            alert('У вас уже есть такой пункт, смотрите внимательно.');
+            isCheked = true;
+            break;
+            
+        }
+    }
+    if(isCheked === false){
+        itemsArray.push({name:inputCreateName.value, checked: false});
     
-    itemsArray.push({name:inputCreateName.value, checked: false});
-
-    let newItems = document.createElement('li');
-    itemsArray.forEach(elem=>{
-        
-        newItems.innerHTML = `<p>${elem.name}</p>
-        <div class="buttonGroup"> 
-        <button class='change'>Change</button>
-        <button class='delete'>Delete</button></div>`
-        listItems.appendChild(newItems);
-    });
+        let newItems = document.createElement('li');
+        itemsArray.forEach(elem=>{
+            
+            newItems.innerHTML = `<p>${elem.name}</p>
+            <div class="buttonGroup"> 
+            <button class='change'>Change</button>
+            <button class='delete'>Delete</button></div>`
+            listItems.appendChild(newItems);
+        });
+    }
+    
+            
     //Отчистка поля ввода
     inputCreateName.value = ''
     
