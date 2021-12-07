@@ -6,10 +6,11 @@ let listItems = document.getElementById('listItems');
 
 
 
-
+//Массив тудушек. Установил по дефолту одну. 
+//Объект тудушки состоит из её имени и выполнена ли она.
 let itemsArray = [{name:'first item', checked: false}];
 
-
+//Первый рендер массива (объектов, установленных по дефолту + можно подключить localstorage)
 let item = document.createElement('li');
 itemsArray.forEach(elem=>{
     item.innerHTML = `<p>${elem.name}</p>
@@ -21,7 +22,7 @@ itemsArray.forEach(elem=>{
 
 
 
-
+//Кнопка создания тудушек
 btnCreate.onclick = function(){
     
     itemsArray.push({name:inputCreateName.value, checked: false});
@@ -35,16 +36,19 @@ btnCreate.onclick = function(){
         <button class='delete'>Delete</button></div>`
         listItems.appendChild(newItems);
     });
+    //Отчистка поля ввода
     inputCreateName.value = ''
     
     
 }
 
 
-
+//Далее описаны функции, которые отрабатывают при разных вариантах нажатия на тудушку.
+//А именно: кнопка удаления, кнопка изменения названия и отметка checked(при клике на фон тудушки)
+//Важно! Клик на текст не производит никакого действия 
 listItems.onclick = function(event){
-    // console.log(event);
     
+    //Если нажатие происходит по полю тудушки
     if(event.target.tagName === 'LI'){
         let li = document.querySelectorAll('li');
         let myArray = Array.from(li);
@@ -67,7 +71,7 @@ listItems.onclick = function(event){
         }
             
         }
-        
+        //Перерендер
         listItems.innerHTML = '';
         
         itemsArray.forEach(elem=>{
@@ -92,6 +96,7 @@ listItems.onclick = function(event){
         });
         console.log(itemsArray); 
     }
+    //Если нажатие на кнопку Delete
     else if(event.target.className === 'delete'){
         btnDelete= document.querySelectorAll(".delete");
         let myButtonArr = Array.from(btnDelete);
@@ -139,6 +144,7 @@ listItems.onclick = function(event){
 
 
     }
+    //если нажатие на кнопку Change
     else if(event.target.className === 'change'){
         btnChange= document.querySelectorAll(".change");
         let myButtonArrChange = Array.from(btnChange);
