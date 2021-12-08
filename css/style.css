@@ -4,6 +4,7 @@
 * button{
     height: 100%;
     cursor: pointer;
+   
 }
 section{
     margin: auto;
@@ -68,4 +69,17 @@ section ul li p{
 }
 .createNewItem button:hover{
     background-color: rgb(140, 187, 189);
+}
+.deleted{
+    display: none;
+}
+.inputChange{
+    width: 200px;
+    height: 100px;
+}
+
+.check{
+    position: absolute;
+    top: calc(50% - 10px);
+    left: -20px;
 }

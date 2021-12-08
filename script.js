@@ -1,22 +1,72 @@
-let btnCreate = document.getElementById('btnCreate');
+
 let btnDelete = document.querySelectorAll(".delete");
 let btnChange = document.querySelectorAll('.change');
-let inputCreateName = document.getElementById('createName');
-let listItems = document.getElementById('listItems');
+
+
+
+let countId = 0;
+
+//Создание html
+const root = document.getElementById('root');
+const section = document.createElement('section');
+const h1 = document.createElement('h1');
+h1.innerText = 'Todo List';
+const listItems = document.createElement('ul');
+const divCreateNewItem = document.createElement('div');
+divCreateNewItem.classList.add('createNewItem');
+const inputCreateName = document.createElement('input');
+inputCreateName.type = 'text';
+inputCreateName.ariaPlaceholder = 'todo'
+const btnCreate = document.createElement('button');
+btnCreate.innerText = 'Create';
+
+root.appendChild(section);
+section.appendChild(h1);
+section.appendChild(listItems);
+section.appendChild(divCreateNewItem);
+divCreateNewItem.appendChild(inputCreateName);
+divCreateNewItem.appendChild(btnCreate);
+
+
 
 
 
 //Массив тудушек. Установил по дефолту одну. 
 //Объект тудушки состоит из её имени и выполнена ли она.
-let itemsArray = [{name:'first item', checked: false}];
+const itemsArray = [{name:'first item', checked: false, deleted: false, id: countId}];
 
 //Первый рендер массива (объектов, установленных по дефолту + можно подключить localstorage)
-let item = document.createElement('li');
+
 itemsArray.forEach(elem=>{
-    item.innerHTML = `<p>${elem.name}</p>
-    <div class="buttonGroup"> 
-    <button class='change'>Change</button>
-    <button class='delete'>Delete</button></div>`
+    const item = document.createElement('li');
+
+item.style.position = 'relative';
+    item.setAttribute('id', elem.id);
+    
+    const buttonCheck = document.createElement('input');
+    buttonCheck.type = 'checkbox';
+    // buttonCheck.innerText = 'Check';
+    buttonCheck.classList.add('check');
+
+
+    const p = document.createElement('p');
+    p.innerText =`${elem.name}`
+    const buttonGroup = document.createElement('div');
+    buttonGroup.classList.add('buttonGroup');
+    const buttonChange = document.createElement('button');
+    buttonChange.classList.add('change');
+    buttonChange.innerText = 'Change';
+    const buttonDelete = document.createElement('button');
+    buttonDelete.classList.add('delete');
+    buttonDelete.innerText = 'Delete';
+    buttonGroup.appendChild(buttonChange);
+    buttonGroup.appendChild(buttonDelete);
+    
+    item.appendChild(p);
+    item.appendChild(buttonCheck)
+    item.appendChild(buttonGroup);
+    countId++;
+    
     listItems.appendChild(item);
 })
 
@@ -24,25 +74,36 @@ itemsArray.forEach(elem=>{
 
 //Кнопка создания тудушек
 btnCreate.onclick = function(){
-    let isCheked = false;
-    for(let i = itemsArray.length -1; i > -1; i--){
-        if(itemsArray[i].name === inputCreateName.value){
-            alert('У вас уже есть такой пункт, смотрите внимательно.');
-            isCheked = true;
-            break;
-            
-        }
-    }
-    if(isCheked === false){
-        itemsArray.push({name:inputCreateName.value, checked: false});
     
-        let newItems = document.createElement('li');
+    if( inputCreateName.value.trim() !== ""){
+        itemsArray.push({name:inputCreateName.value, checked: false, deleted: false, id: countId++});
+        listItems.innerHTML =''
+       
         itemsArray.forEach(elem=>{
-            
-            newItems.innerHTML = `<p>${elem.name}</p>
-            <div class="buttonGroup"> 
-            <button class='change'>Change</button>
-            <button class='delete'>Delete</button></div>`
+            const buttonCheck = document.createElement('input');
+            buttonCheck.type = 'checkbox';
+            buttonCheck.classList.add('check');
+        
+            const newItems = document.createElement('li');
+            newItems.style.position = 'relative';
+            newItems.setAttribute('id', elem.id);
+            const p = document.createElement('p');
+            p.innerText =`${elem.name}`
+            const buttonGroup = document.createElement('div');
+            buttonGroup.classList.add('buttonGroup');
+            const buttonChange = document.createElement('button');
+            buttonChange.classList.add('change');
+            buttonChange.innerText = 'Change';
+            const buttonDelete = document.createElement('button');
+            buttonDelete.classList.add('delete');
+            buttonDelete.innerText = 'Delete';
+              //Удален ли елемент
+              deleteItem(newItems, elem.deleted);
+            buttonGroup.appendChild(buttonChange);
+            buttonGroup.appendChild(buttonDelete);
+            newItems.appendChild(p);
+            newItems.appendChild(buttonCheck)
+            newItems.appendChild(buttonGroup)
             listItems.appendChild(newItems);
         });
     }
@@ -56,58 +117,102 @@ btnCreate.onclick = function(){
 
 
 //Далее описаны функции, которые отрабатывают при разных вариантах нажатия на тудушку.
-//А именно: кнопка удаления, кнопка изменения названия и отметка checked(при клике на фон тудушки)
+//А именно: кнопка удаления, кнопка изменения названия и отметка checked(при клике на checkbox)
 //Важно! Клик на текст не производит никакого действия 
 listItems.onclick = function(event){
     
     //Если нажатие происходит по полю тудушки
-    if(event.target.tagName === 'LI'){
+    if(event.target.className === 'check'){
         let li = document.querySelectorAll('li');
         let myArray = Array.from(li);
         let filtArr = myArray.filter(item => {
-            if(item === event.target){
+            if(item === event.target.parentElement){
                 return true;
             }
         });
         
-        
+        console.log(filtArr);
         for(let i =0; i<itemsArray.length; i++){
-        if(itemsArray[i].name === filtArr[0].children[0].innerText){
-            if(itemsArray[i].checked === false){
-                itemsArray[i].checked = true;
-            }else if(itemsArray[i].checked === true){
-                itemsArray[i].checked = false;
+            if(itemsArray[i].name === filtArr[0].children[0].innerText){
+                if(itemsArray[i].checked === false){
+                    itemsArray[i].checked = true;
+                }else if(itemsArray[i].checked === true){
+                    itemsArray[i].checked = false;
+                }
+                
+                
             }
+                
+            }
+            //Перерендер
+            listItems.innerHTML = '';
             
-            
-        }
-            
-        }
-        //Перерендер
-        listItems.innerHTML = '';
+            itemsArray.forEach(elem=>{
+                let newItems = document.createElement('li');
+                newItems.style.position = 'relative';
+                newItems.setAttribute('id', elem.id);
+                deleteItem(newItems, elem.deleted);
+                if(elem.checked === false){
+                    const buttonCheck = document.createElement('input');
+                    buttonCheck.type = 'checkbox';
+                    buttonCheck.classList.add('check');
+                                
+                    const p = document.createElement('p');
+                    p.innerText =`${elem.name}`
+                    const buttonGroup = document.createElement('div');
+                    buttonGroup.classList.add('buttonGroup');
+                    const buttonChange = document.createElement('button');
+                    buttonChange.classList.add('change');
+                    buttonChange.innerText = 'Change';
+                    const buttonDelete = document.createElement('button');
+                    buttonDelete.classList.add('delete');
+                    buttonDelete.innerText = 'Delete';
+                  
+                    buttonGroup.appendChild(buttonChange);
+                    buttonGroup.appendChild(buttonDelete);
+                    newItems.appendChild(p);
+                    newItems.appendChild(buttonCheck);
+                    newItems.appendChild(buttonGroup);
+                  
+                    listItems.appendChild(newItems);
+                    
+                    
+                }else if(elem.checked === true){
+                    const buttonCheck = document.createElement('input');
+                    buttonCheck.type = 'checkbox';
+                    buttonCheck.classList.add('check');
+                    buttonCheck.setAttribute('checked', 'true')   
+
+                    const p = document.createElement('p');
+                    p.innerText =`${elem.name}`;
+                    p.style.textDecoration = 'line-through'
+                    const buttonGroup = document.createElement('div');
+                    buttonGroup.classList.add('buttonGroup');
+                    const buttonChange = document.createElement('button');
+                    buttonChange.classList.add('change');
+                    buttonChange.innerText = 'Change';
+                    const buttonDelete = document.createElement('button');
+                    buttonDelete.classList.add('delete');
+                    buttonDelete.innerText = 'Delete';
+                  
+                    buttonGroup.appendChild(buttonChange);
+                    buttonGroup.appendChild(buttonDelete);
+                    newItems.appendChild(p);
+                    newItems.appendChild(buttonCheck);
+                    newItems.appendChild(buttonGroup);
+                    
+                    listItems.appendChild(newItems);
+                    
+                }
+                
+                listItems.appendChild(newItems);
+                
+            });
+            console.log(itemsArray); 
         
-        itemsArray.forEach(elem=>{
-            let newItems = document.createElement('li');
-            if(elem.checked === false){
-                newItems.innerHTML = `<p>${elem.name}</p>
-                <div class="buttonGroup"> 
-                <button class='change'>Change</button>
-                <button class='delete'>Delete</button></div>`
-                
-                
-            }else if(elem.checked === true){
-                newItems.innerHTML = `<p style='text-decoration:line-through'>${elem.name}</p>
-                <div class="buttonGroup"> 
-                <button class='change'>Change</button>
-                <button class='delete'>Delete</button></div>`
-                
-            }
-            
-            listItems.appendChild(newItems);
-            
-        });
-        console.log(itemsArray); 
     }
+
+
     //Если нажатие на кнопку Delete
     else if(event.target.className === 'delete'){
         btnDelete= document.querySelectorAll(".delete");
@@ -119,31 +224,77 @@ listItems.onclick = function(event){
         });
         
         for(let i =0; i<itemsArray.length; i++){
-            if(itemsArray[i].name === filtArrBtn[0].parentElement.parentElement.firstChild.innerText){
-                itemsArray.splice(i,1);
-                
+            if(itemsArray[i].id === +filtArrBtn[0].parentElement.parentElement.getAttribute('id')){
+                // itemsArray.splice(i,1);
+                itemsArray[i].deleted = true;
                 
             }
                 
         }
-
-
+       
         listItems.innerHTML = '';
-        
+       
+                
         itemsArray.forEach(elem=>{
-            let newItems = document.createElement('li');
+            const newItems = document.createElement('li');
+            //Удалён ли елемент
+            deleteItem(newItems, elem.deleted);
             if(elem.checked === false){
-                newItems.innerHTML = `<p>${elem.name}</p>
-                <div class="buttonGroup"> 
-                <button class='change'>Change</button>
-                <button class='delete'>Delete</button></div>`
+                const buttonCheck = document.createElement('input');
+                buttonCheck.type = 'checkbox';
+                buttonCheck.classList.add('check');
+            
+                newItems.style.position = 'relative';
+                newItems.setAttribute('id', elem.id);               
+                const p = document.createElement('p');
+                p.innerText =`${elem.name}`
+                const buttonGroup = document.createElement('div');
+                buttonGroup.classList.add('buttonGroup');
+                const buttonChange = document.createElement('button');
+                buttonChange.classList.add('change');
+                buttonChange.innerText = 'Change';
+                const buttonDelete = document.createElement('button');
+                buttonDelete.classList.add('delete');
+                buttonDelete.innerText = 'Delete';
+         
+                
+                buttonGroup.appendChild(buttonChange);
+                buttonGroup.appendChild(buttonDelete);
+                newItems.appendChild(p);
+                newItems.appendChild(buttonCheck);
+                newItems.appendChild(buttonGroup);
+
+                listItems.appendChild(newItems);
                 
                 
             }else if(elem.checked === true){
-                newItems.innerHTML = `<p style='text-decoration:line-through'>${elem.name}</p>
-                <div class="buttonGroup"> 
-                <button class='change'>Change</button>
-                <button class='delete'>Delete</button></div>`
+                const buttonCheck = document.createElement('input');
+                buttonCheck.type = 'checkbox';
+                buttonCheck.classList.add('check');
+                buttonCheck.setAttribute('checked', 'true')   
+            
+                newItems.style.position = 'relative';
+                newItems.setAttribute('id', elem.id);          
+                const p = document.createElement('p');
+                p.innerText =`${elem.name}`;
+                p.style.textDecoration = 'line-through'
+                const buttonGroup = document.createElement('div');
+                buttonGroup.classList.add('buttonGroup');
+                const buttonChange = document.createElement('button');
+                buttonChange.classList.add('change');
+                buttonChange.innerText = 'Change';
+                const buttonDelete = document.createElement('button');
+                buttonDelete.classList.add('delete');
+                buttonDelete.innerText = 'Delete';
+               
+                buttonGroup.appendChild(buttonChange);
+                buttonGroup.appendChild(buttonDelete);
+                newItems.appendChild(p);
+                newItems.appendChild(buttonCheck);
+                newItems.appendChild(buttonGroup);
+
+                listItems.appendChild(newItems);
+                
                 
             }
             
@@ -165,47 +316,128 @@ listItems.onclick = function(event){
                 return true;
             }
         });
+        //Создание кнопки save
+        const save = document.createElement('button');
+        save.style.position = 'absolute';
+        save.style.top = '0';
+        save.style.left = '0';
+        save.style.width = '100%';
+        save.innerText = 'save';
         
+        filtArrBtnChange[0].style.position = 'relative';
+        filtArrBtnChange[0].appendChild(save);
+        
+
+
         for(let i =0; i<itemsArray.length; i++){
             if(itemsArray[i].name === filtArrBtnChange[0].parentElement.parentElement.firstChild.innerText){
-                itemsArray[i].name = prompt('Введите измененное название', "Новое название")
+               
                 
+                const inputChange = document.createElement('input');
+                inputChange.type = 'text';
+                inputChange.style.position = 'absolute';
+                inputChange.style.width = '80%'
+                inputChange.style.height = '100%';
+                inputChange.style.backgroundColor = 'rgba(179, 218, 205, 1)';
                 
+                inputChange.value = `${itemsArray[i].name}`;
+
+                filtArrBtnChange[0].parentElement.parentElement.appendChild(inputChange);
+
+                //функция кнопки save (выполныет то же, что и по нажатию клавиши enter)
+                save.onclick = function(){
+                    itemsArray[i].name = inputChange.value;
+                               
+                                inputChange.style.display = 'none';
+        
+        
+                                    listItems.innerHTML = '';
+                                
+                                    itemsArray.forEach(elem=>{
+                                    const newItems = document.createElement('li');
+                                    newItems.style.position = 'relative';
+                                    newItems.setAttribute('id', elem.id);
+                                    deleteItem(newItems, elem.deleted);
+                                    if(elem.checked === false){
+                                        const buttonCheck = document.createElement('input');
+                                        buttonCheck.type = 'checkbox';
+                                        buttonCheck.classList.add('check');
+                                                          
+                                    const p = document.createElement('p');
+                                    p.innerText =`${elem.name}`
+                                    const buttonGroup = document.createElement('div');
+                                    buttonGroup.classList.add('buttonGroup');
+                                    const buttonChange = document.createElement('button');
+                                    buttonChange.classList.add('change');
+                                    buttonChange.innerText = 'Change';
+                                    const buttonDelete = document.createElement('button');
+                                    buttonDelete.classList.add('delete');
+                                    buttonDelete.innerText = 'Delete';
+                                        
+
+                                    buttonGroup.appendChild(buttonChange);
+                                    buttonGroup.appendChild(buttonDelete);
+                                    newItems.appendChild(p);
+                                    newItems.appendChild(buttonCheck);
+                                    newItems.appendChild(buttonGroup);
+                
+                                    listItems.appendChild(newItems);
+
+                                        
+                                    }else if(elem.checked === true){
+                                        const buttonCheck = document.createElement('input');
+                                        buttonCheck.type = 'checkbox';
+                                        buttonCheck.classList.add('check');
+                                         buttonCheck.setAttribute('checked', 'true')                   
+                                    
+                                        const p = document.createElement('p');
+                                        p.innerText =`${elem.name}`;
+                                        p.style.textDecoration = 'line-through'
+                                        const buttonGroup = document.createElement('div');
+                                        buttonGroup.classList.add('buttonGroup');
+                                        const buttonChange = document.createElement('button');
+                                        buttonChange.classList.add('change');
+                                        buttonChange.innerText = 'Change';
+                                        const buttonDelete = document.createElement('button');
+                                        buttonDelete.classList.add('delete');
+                                        buttonDelete.innerText = 'Delete';
+
+                                          
+                                        buttonGroup.appendChild(buttonChange);
+                                        buttonGroup.appendChild(buttonDelete);
+                                        newItems.appendChild(p);
+                                        newItems.appendChild(buttonCheck);
+                                        newItems.appendChild(buttonGroup);
+                    
+                                        listItems.appendChild(newItems);
+                                        
+                                    }
+                                    
+                                    listItems.appendChild(newItems);
+                                    
+                                });
+                }
+               
             }
                 
         }
 
 
-        listItems.innerHTML = '';
         
-        itemsArray.forEach(elem=>{
-            let newItems = document.createElement('li');
-            if(elem.checked === false){
-                newItems.innerHTML = `<p>${elem.name}</p>
-                <div class="buttonGroup"> 
-                <button class='change'>Change</button>
-                <button class='delete'>Delete</button></div>`
-                
-                
-            }else if(elem.checked === true){
-                newItems.innerHTML = `<p style='text-decoration:line-through'>${elem.name}</p>
-                <div class="buttonGroup"> 
-                <button class='change'>Change</button>
-                <button class='delete'>Delete</button></div>`
-                
-            }
-            
-            listItems.appendChild(newItems);
-            
-        });
         
 
     }
     
     
 }
-
-
+//Функция удаления элемента
+function deleteItem(item, isDeleted){
+    if(isDeleted === true){
+        item.classList.add('deleted');
+        console.log(itemsArray)
+    }
+    
+}
 
 
 
