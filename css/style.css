@@ -83,3 +83,23 @@ section ul li p{
     top: calc(50% - 10px);
     left: -20px;
 }
+.parentPosition{
+    position: relative;
+}
+.pCheck{
+    text-decoration: line-through;
+}
+.saveBtn{
+    position: absolute;
+    top:0;
+    left: 0;
+    width: 100%;
+
+}
+.inputChange{
+    background-color: rgba(179, 218, 205, 1);
+    width: 80%;
+    height: 100%;
+    position: absolute;
+
+}
