@@ -28,9 +28,6 @@ divCreateNewItem.appendChild(inputCreateName);
 divCreateNewItem.appendChild(btnCreate);
 
 
-
-
-
 //Массив тудушек. Установил по дефолту одну. 
 //Объект тудушки состоит из её имени и выполнена ли она.
 const itemsArray = [{name:'first item', checked: false, deleted: false, id: countId}];
@@ -146,7 +143,6 @@ listItems.onclick = function(event){
               
         itemsArray.forEach(elem=>{
             const newItems = document.createElement('li');
-            // newItems.classList.add('parentPosition')
            
             render(newItems, elem.name, elem.id, elem.checked, elem.deleted); 
             
@@ -289,33 +285,7 @@ function render (item, name, idElem, isCheck, isDeleted){
     
 }
 
-// function renderUnchecked (item, name){
-//     const buttonCheck = document.createElement('input');
-//                                         buttonCheck.type = 'checkbox';
-//                                         buttonCheck.classList.add('check');
-//                                          buttonCheck.setAttribute('checked', 'true')                   
-                                    
-//                                         const p = document.createElement('p');
-//                                         p.innerText =`${name}`;
-//                                         p.classList.add('pCheck')
-//                                         const buttonGroup = document.createElement('div');
-//                                         buttonGroup.classList.add('buttonGroup');
-//                                         const buttonChange = document.createElement('button');
-//                                         buttonChange.classList.add('change');
-//                                         buttonChange.innerText = 'Change';
-//                                         const buttonDelete = document.createElement('button');
-//                                         buttonDelete.classList.add('delete');
-//                                         buttonDelete.innerText = 'Delete';
 
-                                          
-//                                         buttonGroup.appendChild(buttonChange);
-//                                         buttonGroup.appendChild(buttonDelete);
-//                                         item.appendChild(p);
-//                                         item.appendChild(buttonCheck);
-//                                         item.appendChild(buttonGroup);
-                    
-//                                         listItems.appendChild(item);
-// }
 
 
 
