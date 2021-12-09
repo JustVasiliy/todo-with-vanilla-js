@@ -40,34 +40,12 @@ const itemsArray = [{name:'first item', checked: false, deleted: false, id: coun
 itemsArray.forEach(elem=>{
     const item = document.createElement('li');
 
-    item.classList.add('parentPosition')
-    item.setAttribute('id', elem.id);
-    
-    const buttonCheck = document.createElement('input');
-    buttonCheck.type = 'checkbox';
-    // buttonCheck.innerText = 'Check';
-    buttonCheck.classList.add('check');
-
-
-    const p = document.createElement('p');
-    p.innerText =`${elem.name}`
-    const buttonGroup = document.createElement('div');
-    buttonGroup.classList.add('buttonGroup');
-    const buttonChange = document.createElement('button');
-    buttonChange.classList.add('change');
-    buttonChange.innerText = 'Change';
-    const buttonDelete = document.createElement('button');
-    buttonDelete.classList.add('delete');
-    buttonDelete.innerText = 'Delete';
-    buttonGroup.appendChild(buttonChange);
-    buttonGroup.appendChild(buttonDelete);
-    
-    item.appendChild(p);
-    item.appendChild(buttonCheck)
-    item.appendChild(buttonGroup);
-    countId++;
+   
+    render(item, elem.name, elem.id, elem.checked, elem.deleted); 
     
     listItems.appendChild(item);
+
+    countId++;
 })
 
 
@@ -83,15 +61,8 @@ btnCreate.onclick = function(){
             const newItems = document.createElement('li');
                 newItems.classList.add('parentPosition')
                 newItems.setAttribute('id', elem.id);
-                deleteItem(newItems, elem.deleted);
-                if(elem.checked === false){
-                                    
-                    renderChecked(newItems,elem.name)
-                        
-                }else if(elem.checked === true){
-                
-                    renderUnchecked(newItems, elem.name)
-                }
+
+                render(newItems, elem.name, elem.id, elem.checked, elem.deleted);            
     
         });
     }
@@ -137,17 +108,11 @@ listItems.onclick = function(event){
             
             itemsArray.forEach(elem=>{
                 let newItems = document.createElement('li');
-                newItems.classList.add('parentPosition')
-                newItems.setAttribute('id', elem.id);
-                deleteItem(newItems, elem.deleted);
-                if(elem.checked === false){
-                                    
-                    renderChecked(newItems,elem.name)
-                        
-                }else if(elem.checked === true){
+                // newItems.classList.add('parentPosition')
+                // newItems.setAttribute('id', elem.id);
+               
+                render(newItems, elem.name, elem.id, elem.checked, elem.deleted); 
                 
-                    renderUnchecked(newItems, elem.name)
-                }
     
                 
                 listItems.appendChild(newItems);
@@ -181,18 +146,9 @@ listItems.onclick = function(event){
               
         itemsArray.forEach(elem=>{
             const newItems = document.createElement('li');
-            newItems.classList.add('parentPosition')
-            //Удалён ли елемент
-            console.log(elem.checked)
-            deleteItem(newItems, elem.deleted);
-            if(elem.checked === false){
-                                    
-                renderChecked(newItems,elem.name)
-                    
-            }else if(elem.checked === true){
-            
-                renderUnchecked(newItems, elem.name)
-            }
+            // newItems.classList.add('parentPosition')
+           
+            render(newItems, elem.name, elem.id, elem.checked, elem.deleted); 
             
             listItems.appendChild(newItems);
             
@@ -247,17 +203,9 @@ listItems.onclick = function(event){
                                     
                         itemsArray.forEach(elem=>{
                         const newItems = document.createElement('li');
-                        newItems.classList.add('parentPosition')
-                        newItems.setAttribute('id', elem.id);
-                        deleteItem(newItems, elem.deleted);
-                            if(elem.checked === false){
-                                            
-                            renderChecked(newItems,elem.name);
-                                                
-                            }else if(elem.checked === true){
-                                        
-                            renderUnchecked(newItems, elem.name);
-                            }
+                       
+                        render(newItems, elem.name, elem.id, elem.checked, elem.deleted); 
+                            
                                         
                             listItems.appendChild(newItems);
                                         
@@ -280,67 +228,94 @@ listItems.onclick = function(event){
     
     
 }
-//Функция удаления элемента
-function deleteItem(item, isDeleted){
+
+function render (item, name, idElem, isCheck, isDeleted){
+    item.classList.add('parentPosition')
+    item.setAttribute('id', idElem);
     if(isDeleted === true){
         item.classList.add('deleted');
-        
+    } 
+    if(isCheck === false){
+        const buttonCheck = document.createElement('input');
+        buttonCheck.type = 'checkbox';
+        buttonCheck.classList.add('check');
+                                                              
+        const p = document.createElement('p');
+        p.innerText =`${name}`
+        const buttonGroup = document.createElement('div');
+        buttonGroup.classList.add('buttonGroup');
+        const buttonChange = document.createElement('button');
+        buttonChange.classList.add('change');
+        buttonChange.innerText = 'Change';
+        const buttonDelete = document.createElement('button');
+        buttonDelete.classList.add('delete');
+        buttonDelete.innerText = 'Delete';
+                                            
+    
+        buttonGroup.appendChild(buttonChange);
+        buttonGroup.appendChild(buttonDelete);
+        item.appendChild(p);
+        item.appendChild(buttonCheck);
+        item.appendChild(buttonGroup);
+                    
+        listItems.appendChild(item);
+    }else if (isCheck === true){
+        const buttonCheck = document.createElement('input');
+        buttonCheck.type = 'checkbox';
+        buttonCheck.classList.add('check');
+         buttonCheck.setAttribute('checked', 'true')                   
+    
+        const p = document.createElement('p');
+        p.innerText =`${name}`;
+        p.classList.add('pCheck')
+        const buttonGroup = document.createElement('div');
+        buttonGroup.classList.add('buttonGroup');
+        const buttonChange = document.createElement('button');
+        buttonChange.classList.add('change');
+        buttonChange.innerText = 'Change';
+        const buttonDelete = document.createElement('button');
+        buttonDelete.classList.add('delete');
+        buttonDelete.innerText = 'Delete';
+
+          
+        buttonGroup.appendChild(buttonChange);
+        buttonGroup.appendChild(buttonDelete);
+        item.appendChild(p);
+        item.appendChild(buttonCheck);
+        item.appendChild(buttonGroup);
+
+        listItems.appendChild(item);
     }
     
 }
-function renderChecked (item, name){
-    const buttonCheck = document.createElement('input');
-    buttonCheck.type = 'checkbox';
-    buttonCheck.classList.add('check');
-                                                          
-                                    const p = document.createElement('p');
-                                    p.innerText =`${name}`
-                                    const buttonGroup = document.createElement('div');
-                                    buttonGroup.classList.add('buttonGroup');
-                                    const buttonChange = document.createElement('button');
-                                    buttonChange.classList.add('change');
-                                    buttonChange.innerText = 'Change';
-                                    const buttonDelete = document.createElement('button');
-                                    buttonDelete.classList.add('delete');
-                                    buttonDelete.innerText = 'Delete';
-                                        
 
-                                    buttonGroup.appendChild(buttonChange);
-                                    buttonGroup.appendChild(buttonDelete);
-                                    item.appendChild(p);
-                                    item.appendChild(buttonCheck);
-                                    item.appendChild(buttonGroup);
-                
-                                    listItems.appendChild(item);
-}
-
-function renderUnchecked (item, name){
-    const buttonCheck = document.createElement('input');
-                                        buttonCheck.type = 'checkbox';
-                                        buttonCheck.classList.add('check');
-                                         buttonCheck.setAttribute('checked', 'true')                   
+// function renderUnchecked (item, name){
+//     const buttonCheck = document.createElement('input');
+//                                         buttonCheck.type = 'checkbox';
+//                                         buttonCheck.classList.add('check');
+//                                          buttonCheck.setAttribute('checked', 'true')                   
                                     
-                                        const p = document.createElement('p');
-                                        p.innerText =`${name}`;
-                                        p.classList.add('pCheck')
-                                        const buttonGroup = document.createElement('div');
-                                        buttonGroup.classList.add('buttonGroup');
-                                        const buttonChange = document.createElement('button');
-                                        buttonChange.classList.add('change');
-                                        buttonChange.innerText = 'Change';
-                                        const buttonDelete = document.createElement('button');
-                                        buttonDelete.classList.add('delete');
-                                        buttonDelete.innerText = 'Delete';
+//                                         const p = document.createElement('p');
+//                                         p.innerText =`${name}`;
+//                                         p.classList.add('pCheck')
+//                                         const buttonGroup = document.createElement('div');
+//                                         buttonGroup.classList.add('buttonGroup');
+//                                         const buttonChange = document.createElement('button');
+//                                         buttonChange.classList.add('change');
+//                                         buttonChange.innerText = 'Change';
+//                                         const buttonDelete = document.createElement('button');
+//                                         buttonDelete.classList.add('delete');
+//                                         buttonDelete.innerText = 'Delete';
 
                                           
-                                        buttonGroup.appendChild(buttonChange);
-                                        buttonGroup.appendChild(buttonDelete);
-                                        item.appendChild(p);
-                                        item.appendChild(buttonCheck);
-                                        item.appendChild(buttonGroup);
+//                                         buttonGroup.appendChild(buttonChange);
+//                                         buttonGroup.appendChild(buttonDelete);
+//                                         item.appendChild(p);
+//                                         item.appendChild(buttonCheck);
+//                                         item.appendChild(buttonGroup);
                     
-                                        listItems.appendChild(item);
-}
+//                                         listItems.appendChild(item);
+// }
 
 
 
