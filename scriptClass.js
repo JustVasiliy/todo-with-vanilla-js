@@ -7,29 +7,25 @@ const btnCreate = document.createElement('button');
 const inputCreateName = document.createElement('input');
 
 
-
+let saveBtn = document.createElement('button');
 
 
 //class for create todo-object
 class Todo {
-    constructor(name, checked = false, deleted = false, id = store.counter()) {
+    constructor(name, checked = false, deleted = false, id = store.counter(), editing = false) {
         this.name = name;
         this.checked = checked;
         this.deleted = deleted;
         this.id = id;
-
+        this.editing = editing;
     }
 }
 
-
-//class for render
-class Render {
-    constructor(array) {
-
-        this.array = array;
+class FirstRender {
+    constructor() {
 
     }
-    firstRender() {
+    fRender() {
         const root = document.getElementById('root');
         const section = document.createElement('section');
         const h1 = document.createElement('h1');
@@ -50,7 +46,21 @@ class Render {
         section.appendChild(divCreateNewItem);
         divCreateNewItem.appendChild(inputCreateName);
         divCreateNewItem.appendChild(btnCreate);
+
+        saveBtn.classList.add('saveBtn');
+
+
+        saveBtn.innerText = 'save';
     }
+}
+// class for render
+class Render {
+    constructor(array) {
+
+        this.array = array;
+
+    }
+
     render() {
 
 
@@ -62,6 +72,8 @@ class Render {
 
 
             this.array.arrayItems.forEach(element => {
+                saveBtn = document.createElement('button');
+
                 const newItems = document.createElement('li');
                 newItems.classList.add('parentPosition')
                 newItems.setAttribute('id', element.id);
@@ -83,6 +95,24 @@ class Render {
                 buttonDelete.classList.add('delete');
                 buttonDelete.innerText = 'Delete';
 
+                // saveBtn
+                saveBtn.classList.add('saveBtn');
+                saveBtn.innerText = 'save';
+                saveBtn.style.display = 'none'
+                buttonGroup.classList.add('parentPosition');
+                buttonGroup.appendChild(saveBtn);
+
+                // end saveBtn
+
+                //inputChange
+                const inputChange = document.createElement('input');
+                inputChange.type = 'text';
+                inputChange.classList.add('inputChange');
+
+                inputChange.setAttribute('maxlength', '50');
+                inputChange.style.display = 'none';
+                newItems.appendChild(inputChange);
+                //end inputChange
 
                 buttonGroup.appendChild(buttonChange);
                 buttonGroup.appendChild(buttonDelete);
@@ -97,60 +127,41 @@ class Render {
 
 
                 }
-
+                if (element.editing === true) {
+                    inputChange.value = element.name;
+                    saveBtn.style.display = 'block';
+                    
+                    inputChange.style.display = 'block';
+                   
+                    
+                    saveBtn.onclick = function () {
+                        element.editing = false;
+                        if(inputChange.value.trim()){
+                            element.name = inputChange.value.trim()
+                            reRender.render()
+                        }
+                       
+                       
+                    }
+                    inputChange.addEventListener('keydown', (event)=> {
+                        if(event.keyCode === 13){
+                            element.editing = false;
+                            if(inputChange.value.trim()){
+                                element.name = inputChange.value.trim()
+                                reRender.render()
+                            }
+                        }else if(event.keyCode === 27){
+                            element.editing = false;
+                            reRender.render();
+                        }
+                    }
+                    )
+                }
             });
         }
-        console.log(this.array.arrayItems)
+
     }
-    renderBtnSave(filtArrBtnChange, arrayItems) {
-        //Создание кнопки save
-        const save = document.createElement('button');
-        save.classList.add('saveBtn');
-
-        save.innerText = 'save';
-
-        filtArrBtnChange[0].classList.add('parentPosition')
-        filtArrBtnChange[0].appendChild(save);
-        for (let i = 0; i < arrayItems.length; i++) {
-            if (arrayItems[i].id === +filtArrBtnChange[0].parentElement.parentElement.getAttribute('id')) {
-
-
-                const inputChange = document.createElement('input');
-                inputChange.type = 'text';
-                inputChange.classList.add('inputChange');
-
-                inputChange.setAttribute('maxlength', '50')
-                inputChange.value = `${arrayItems[i].name}`;
-
-                filtArrBtnChange[0].parentElement.parentElement.appendChild(inputChange);
-                let testArray = arrayItems;
-                //функция кнопки save 
-                save.onclick = function () {
-
-                    if (inputChange.value.trim() !== '') {
-
-                        testArray[i].name = inputChange.value.trim();
-
-                        inputChange.classList.add('deleted');
-
-                        listItems.innerHTML = '';
-
-                        testArray.forEach(elem => {
-                            const newItems = document.createElement('li');
-
-                            new Render(store).render();
-
-                        });
-                    }
-
-
-                }
-
-
-            }
-
-        }
-    }
+   
 
 
 
@@ -169,13 +180,13 @@ class Store {
 
         return this.arrayItems;
     }
-    check(event) {
+    check(id) {
 
-        let filtArr = [event.target.parentElement]
+
 
         for (let i = 0; i < this.arrayItems.length; i++) {
 
-            if (this.arrayItems[i].id === +filtArr[0].getAttribute('id')) {
+            if (this.arrayItems[i].id === +id) {
                 if (this.arrayItems[i].checked === false) {
                     this.arrayItems[i].checked = true;
                 } else if (this.arrayItems[i].checked === true) {
@@ -187,11 +198,12 @@ class Store {
 
         }
     }
-    delete(event) {
-       
-        let filtArrBtn = [event.target]
+    delete(id) {
+
+
         for (let i = 0; i < this.arrayItems.length; i++) {
-            if (this.arrayItems[i].id === +filtArrBtn[0].parentElement.parentElement.getAttribute('id')) {
+            if (this.arrayItems[i].id === +id) {
+
                 // itemsArray.splice(i,1);
                 this.arrayItems[i].deleted = true;
 
@@ -199,35 +211,48 @@ class Store {
 
         }
     }
-    change(event) {
+    change(id) {
+        for (let i = 0; i < this.arrayItems.length; i++) {
+            if (this.arrayItems[i].id === +id) {
+                this.arrayItems[i].editing = true;
+            }
+        }
+
         
-       
-        let filtArrBtnChange = [event.target]
-        return filtArrBtnChange;
-       
 
     }
-    counter(){
+    counter() {
         this.countId++
-       
+
         return this.countId;
     }
 }
 
 
+new FirstRender().fRender();
 
 let store = new Store()
 
-new Render(store).firstRender();
-
+// new Render(store).firstRender();
+let reRender = new Render(store)
 
 
 btnCreate.onclick = function () {
+    save()
+}
+inputCreateName.addEventListener('keydown', (event) => {
+    if (event.keyCode === 13) {
+        save()
+    } else if (event.keyCode === 27) {
+        inputCreateName.value = ''
+    }
+});
+function save() {
     if (inputCreateName.value.trim() !== "") {
 
         store.create(new Todo(inputCreateName.value));
+        reRender.render()
 
-        new Render(store).render();
     }
 
     inputCreateName.value = ''
@@ -236,20 +261,26 @@ btnCreate.onclick = function () {
 //listeners
 listItems.onclick = function (event) {
     if (event.target.className === 'check') {
-        store.check(event);
-        new Render(store).render();
+        let id = event.target.parentElement.getAttribute('id');
+        store.check(id);
+        reRender.render()
 
 
 
     } else if (event.target.className === 'delete') {
-        store.delete(event);
-        new Render(store).render();
+        let id = event.target.parentElement.parentElement.getAttribute('id')
+
+        store.delete(id);
+        reRender.render()
 
     }
     else if (event.target.className === 'change') {
-       
-        store.change(event);
-        new Render(store).renderBtnSave(store.change(event), store.arrayItems)
+        let id = event.target.parentElement.parentElement.getAttribute('id')
+        store.change(id);
+        
+        reRender.render()
+
+
 
     }
 }
