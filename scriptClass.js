@@ -8,7 +8,7 @@ const inputCreateName = document.createElement('input');
 
 
 let saveBtn = document.createElement('button');
-
+let inputChange = document.createElement('input');
 
 //class for create todo-object
 class Todo {
@@ -21,11 +21,11 @@ class Todo {
     }
 }
 
-class FirstRender {
+class RenderMainForm {
     constructor() {
 
     }
-    fRender() {
+    render() {
         const root = document.getElementById('root');
         const section = document.createElement('section');
         const h1 = document.createElement('h1');
@@ -73,7 +73,7 @@ class Render {
 
             this.array.arrayItems.forEach(element => {
                 saveBtn = document.createElement('button');
-
+                inputChange = document.createElement('input');
                 const newItems = document.createElement('li');
                 newItems.classList.add('parentPosition')
                 newItems.setAttribute('id', element.id);
@@ -105,7 +105,7 @@ class Render {
                 // end saveBtn
 
                 //inputChange
-                const inputChange = document.createElement('input');
+                
                 inputChange.type = 'text';
                 inputChange.classList.add('inputChange');
 
@@ -130,38 +130,17 @@ class Render {
                 if (element.editing === true) {
                     inputChange.value = element.name;
                     saveBtn.style.display = 'block';
-                    
+
                     inputChange.style.display = 'block';
-                   
+
+
                     
-                    saveBtn.onclick = function () {
-                        element.editing = false;
-                        if(inputChange.value.trim()){
-                            element.name = inputChange.value.trim()
-                            reRender.render()
-                        }
-                       
-                       
-                    }
-                    inputChange.addEventListener('keydown', (event)=> {
-                        if(event.keyCode === 13){
-                            element.editing = false;
-                            if(inputChange.value.trim()){
-                                element.name = inputChange.value.trim()
-                                reRender.render()
-                            }
-                        }else if(event.keyCode === 27){
-                            element.editing = false;
-                            reRender.render();
-                        }
-                    }
-                    )
                 }
             });
         }
 
     }
-   
+
 
 
 
@@ -218,8 +197,19 @@ class Store {
             }
         }
 
-        
 
+
+    }
+    editing(id,chengedName){
+        for (let i = 0; i < this.arrayItems.length; i++) {
+            if (this.arrayItems[i].id === +id) {
+                this.arrayItems[i].editing = false;
+                if(chengedName !== undefined){
+                    this.arrayItems[i].name = chengedName
+                }
+                
+            }
+        }
     }
     counter() {
         this.countId++
@@ -229,41 +219,45 @@ class Store {
 }
 
 
-new FirstRender().fRender();
-
+const renderMainForm = new RenderMainForm();
 let store = new Store()
-
-// new Render(store).firstRender();
 let reRender = new Render(store)
 
 
-btnCreate.onclick = function () {
-    save()
-}
-inputCreateName.addEventListener('keydown', (event) => {
-    if (event.keyCode === 13) {
-        save()
-    } else if (event.keyCode === 27) {
-        inputCreateName.value = ''
-    }
-});
-function save() {
+btnCreate.addEventListener('click', ()=>{
     if (inputCreateName.value.trim() !== "") {
 
         store.create(new Todo(inputCreateName.value));
-        reRender.render()
+        emitter.emit('todosChanged')
+       
+        
 
     }
 
     inputCreateName.value = ''
-}
+}) 
+inputCreateName.addEventListener('keydown', (event) => {
+    if (event.keyCode === 13) {
+        if (inputCreateName.value.trim() !== "") {
+
+            store.create(new Todo(inputCreateName.value));
+            emitter.emit('todosChanged')
+
+        }
+
+        inputCreateName.value = ''
+    } else if (event.keyCode === 27) {
+        
+    }
+});
+
 
 //listeners
-listItems.onclick = function (event) {
+listItems.addEventListener('click', (event) => {
     if (event.target.className === 'check') {
         let id = event.target.parentElement.getAttribute('id');
         store.check(id);
-        reRender.render()
+        emitter.emit('todosChanged')
 
 
 
@@ -271,19 +265,88 @@ listItems.onclick = function (event) {
         let id = event.target.parentElement.parentElement.getAttribute('id')
 
         store.delete(id);
-        reRender.render()
+        emitter.emit('todosChanged')
 
     }
     else if (event.target.className === 'change') {
         let id = event.target.parentElement.parentElement.getAttribute('id')
-        store.change(id);
+        const inputChange = event.target.parentElement.parentElement.children[0];
         
-        reRender.render()
+        store.change(id);
+
+        emitter.emit('todosChanged')
+       
 
 
+    }else if(event.target.className === 'saveBtn'){
+        let id = event.target.parentElement.parentElement.getAttribute('id');
+        const inputChange = event.target.parentElement.parentElement.children[0]
+        let newName = inputChange.value;
+        if(newName.trim() !== ''){
+            store.editing(id, newName)
+        }
+        
+        
+        emitter.emit('todosChanged')
+        
+        
+    }
+})
 
+listItems.addEventListener('keydown', (event)=>{
+    let id = event.target.parentElement.getAttribute('id');
+       
+    if(event.keyCode === 13){
+        
+        const inputChange = event.target
+        let newName = inputChange.value;
+        if(newName.trim() !== ''){
+            store.editing(id, newName)
+        }
+        emitter.emit('todosChanged')
+
+
+    }else if(event.keyCode === 27){
+        let newName = undefined
+        store.editing(id, newName)
+        emitter.emit('todosChanged')
+    }
+})
+
+class EventEmitter {
+    constructor() {
+        this.event = {};
+    }
+    on(eventName, callback) {
+        if (this.event[eventName]) {
+            this.event[eventName].push(callback)
+        } else {
+            this.event[eventName] = [callback]
+        }
+    }
+    emit(eventName, ...rest) {
+        if (this.event[eventName]) {
+            this.event[eventName].forEach(callback => {
+                callback.apply(rest)
+            })
+        }
     }
 }
+const emitter = new EventEmitter();
+emitter.on('todosChanged', () => reRender.render());
+
+emitter.on('mainChange', ()=> renderMainForm.render() )
+
+emitter.emit('mainChange')
+
+
+
+
+
+
+
+
+
 
 
 
