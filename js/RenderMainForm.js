@@ -1,7 +1,3 @@
-export let listItems = document.createElement('ul');
-export let btnCreate = document.createElement('button');
-export let inputCreateName = document.createElement('input');
-
 export class RenderMainForm {
     constructor() {
 
@@ -11,16 +7,20 @@ export class RenderMainForm {
         let section = document.createElement('section');
         let h1 = document.createElement('h1');
         h1.innerText = 'Todo List';
-
-        listItems.id = 'ul'
-        let divCreateNewItem = document.createElement('div');
-        divCreateNewItem.classList.add('createNewItem');
-
+        let listItems = document.createElement('ul');
+        listItems.classList.add('listItems');
+        listItems.id = 'ul';
+        let btnCreate = document.createElement('button');
+        btnCreate.classList.add('btnCreate');
+        btnCreate.innerText = 'Create';
+        let inputCreateName = document.createElement('input');
+        inputCreateName.classList.add('inputCreateName');
         inputCreateName.type = 'text';
         inputCreateName.ariaPlaceholder = 'todo'
-
-        btnCreate.innerText = 'Create';
-
+        let divCreateNewItem = document.createElement('div');
+        divCreateNewItem.classList.add('createNewItem');
+        
+        
         root.appendChild(section);
         section.appendChild(h1);
         section.appendChild(listItems);
